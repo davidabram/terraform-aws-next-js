@@ -37,11 +37,11 @@ function isDynamicRoute(route: string): boolean {
 function validateEntrypoint(entrypoint: string) {
   if (
     !/package\.json$/.exec(entrypoint) &&
-    !/next\.config\.js$/.exec(entrypoint)
+    !/next\.config\.m?js$/.exec(entrypoint)
   ) {
     throw new NowBuildError({
       message:
-        'Specified "src" for "@vercel/next" has to be "package.json" or "next.config.js"',
+        'Specified "src" for "@vercel/next" has to be "package.json" or "next.config.[m]js"',
       code: 'NEXT_INCORRECT_SRC',
     });
   }
@@ -136,9 +136,19 @@ async function getNextConfig(workPath: string, entryPath: string) {
     return fs.readFile(entryConfig, 'utf8');
   }
 
+  const esEntryConfig = path.join(entryPath, './next.config.mjs');
+  if (await fs.pathExists(esEntryConfig)) {
+    return fs.readFile(esEntryConfig, 'utf8');
+  }
+
   const workConfig = path.join(workPath, './next.config.js');
   if (await fs.pathExists(workConfig)) {
     return fs.readFile(workConfig, 'utf8');
+  }
+
+  const esWorkConfig = path.join(entryPath, './next.config.mjs');
+  if (await fs.pathExists(esWorkConfig)) {
+    return fs.readFile(esWorkConfig, 'utf8');
   }
 
   return null;

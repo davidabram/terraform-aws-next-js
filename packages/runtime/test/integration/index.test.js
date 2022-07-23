@@ -484,3 +484,30 @@ it(
   },
   FOUR_MINUTES
 );
+
+it(
+  'Should build the next-config-mjs example',
+  async () => {
+    const {
+      workPath,
+      buildResult: { output },
+    } = await runBuildLambda(path.join(__dirname, 'next-config-mjs'));
+    expect(output['index']).toBeDefined();
+    expect(output.goodbye).not.toBeDefined();
+    expect(output.__NEXT_PAGE_LAMBDA_0).toBeDefined();
+    const filePaths = Object.keys(output);
+    const serverlessError = filePaths.some(filePath =>
+      filePath.match(/_error/)
+    );
+    const hasUnderScoreAppStaticFile = filePaths.some(filePath =>
+      filePath.match(/static.*\/pages\/_app-.*\.js$/)
+    );
+    const hasUnderScoreErrorStaticFile = filePaths.some(filePath =>
+      filePath.match(/static.*\/pages\/_error-.*\.js$/)
+    );
+    expect(hasUnderScoreAppStaticFile).toBeTruthy();
+    expect(hasUnderScoreErrorStaticFile).toBeTruthy();
+    expect(serverlessError).toBeTruthy();
+  },
+  FOUR_MINUTES
+)

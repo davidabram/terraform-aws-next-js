@@ -1024,7 +1024,7 @@ export async function build({
       const nextConfig = await getNextConfig(workPath, entryPath);
 
       if (nextConfig != null) {
-        console.info('Found next.config.js:');
+        console.info('Found next.config.[m]js:');
         console.info(nextConfig);
         console.info();
       }
